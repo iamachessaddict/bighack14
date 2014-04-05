@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="app_name">BigHack14</string>
+    <string name="title_sectionl">Section Left</string>
+    <string name="title_sectionm">Section Main</string>
+    <string name="title_sectionr">Section Right</string>
+    <string name="action_settings">Settings</string>
+    <string name="temp_text_left">Left</string>
+
+</resources>
