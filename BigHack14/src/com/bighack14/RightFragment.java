@@ -11,7 +11,7 @@ public class RightFragment extends Fragment {
 	
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-		rootView = inflater.inflate(R.layout.fragment_left, container, false);
+		rootView = inflater.inflate(R.layout.fragment_right, container, false);
 		
 		return rootView;
 	}

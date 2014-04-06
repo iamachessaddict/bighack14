@@ -2657,3 +2657,21 @@ java.lang.NullPointerException
 	at org.eclipse.equinox.launcher.Main.invokeFramework(Main.java:629)
 	at org.eclipse.equinox.launcher.Main.basicRun(Main.java:584)
 	at org.eclipse.equinox.launcher.Main.run(Main.java:1438)
+
+!ENTRY com.android.ide.eclipse.adt 4 0 2014-04-05 16:02:44.100
+!MESSAGE fragment_right.xml: Unexpected error in rendering, no details given
+
+!ENTRY com.android.ide.eclipse.adt 2 0 2014-04-05 16:04:12.101
+!MESSAGE fragment_main.xml: Couldn't resolve resource @string/temp_text_main
+
+!ENTRY com.android.ide.eclipse.adt 2 0 2014-04-05 16:22:21.585
+!MESSAGE fragment_left.xml: Couldn't resolve resource @string/temp_text_left
+
+!ENTRY com.android.ide.eclipse.adt 2 0 2014-04-05 16:22:24.197
+!MESSAGE fragment_left.xml: Couldn't resolve resource @string/temp_tleft
+
+!ENTRY com.android.ide.eclipse.adt 4 0 2014-04-05 16:26:37.033
+!MESSAGE activity_main.xml: Unexpected error in rendering, no details given
+
+!ENTRY com.android.ide.eclipse.adt 4 0 2014-04-05 16:36:18.655
+!MESSAGE fragment_main.xml: Unexpected error in rendering, no details given

@@ -1,7 +1,5 @@
 package com.bighack14;
 
-import java.util.Locale;
-
 import android.app.ActionBar;
 import android.app.Fragment;
 import android.app.ActionBar.Tab;
@@ -13,8 +11,7 @@ import android.view.MenuItem;
 
 public class MainActivity extends Activity {
 
-    ViewPager mViewPager;
-    ActionBar.Tab leftTab, mainTab, rightTab;
+    Tab leftTab, mainTab, rightTab;
     Fragment leftFragment = new LeftFragment();
     Fragment mainFragment = new MainFragment();
     Fragment rightFragment = new RightFragment();
@@ -23,12 +20,17 @@ public class MainActivity extends Activity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        Tab leftTab, mainTab, rightTab;
-        android.app.ActionBar actionBar = getActionBar();
+        ActionBar actionBar = getActionBar();
         actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_TABS);
-        leftTab = actionBar.newTab().setCustomView(R.layout.fragment_left);
-        mainTab = actionBar.newTab().setCustomView(R.layout.fragment_main);
-        rightTab = actionBar.newTab().setCustomView(R.layout.fragment_right);
+        
+        leftTab = actionBar.newTab();
+        mainTab = actionBar.newTab();
+        rightTab = actionBar.newTab();
+        
+        leftTab.setText(R.string.title_sectionl);
+        mainTab.setText(R.string.title_sectionm);
+        rightTab.setText(R.string.title_sectionr);
+        
         leftTab.setTabListener(new HackTabListener(leftFragment));
 		mainTab.setTabListener(new HackTabListener(mainFragment));
 		rightTab.setTabListener(new HackTabListener(rightFragment));
