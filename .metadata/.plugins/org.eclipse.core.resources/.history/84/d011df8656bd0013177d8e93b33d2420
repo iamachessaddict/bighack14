@@ -1,0 +1,97 @@
+package com.bighack14;
+
+import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.GooglePlayServicesClient;
+
+import android.app.ActionBar;
+import android.app.Fragment;
+import android.app.ActionBar.Tab;
+import android.app.Activity;
+import android.location.Location;
+import android.os.Bundle;
+import android.view.Menu;
+import android.view.MenuItem;
+import android.widget.Toast;
+
+public class MainActivity extends Activity implements
+GooglePlayServicesClient.ConnectionCallbacks,
+GooglePlayServicesClient.OnConnectionFailedListener,
+com.google.android.gms.location.LocationListener {
+
+	Location currentLocation;
+	
+    Tab leftTab, mainTab, rightTab;
+    Fragment leftFragment = new LeftFragment();
+    Fragment mainFragment = new MainFragment();
+    Fragment rightFragment = new RightFragment();
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_main);
+        ActionBar actionBar = getActionBar();
+        actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_TABS);
+        
+        leftTab = actionBar.newTab();
+        mainTab = actionBar.newTab();
+        rightTab = actionBar.newTab();
+        
+        leftTab.setText(R.string.title_sectionl);
+        mainTab.setText(R.string.title_sectionm);
+        rightTab.setText(R.string.title_sectionr);
+        
+        leftTab.setTabListener(new HackTabListener(leftFragment));
+		mainTab.setTabListener(new HackTabListener(mainFragment));
+		rightTab.setTabListener(new HackTabListener(rightFragment));
+		actionBar.addTab(leftTab);
+		actionBar.addTab(mainTab);
+		actionBar.addTab(rightTab);
+
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        
+        // Inflate the menu; this adds items to the action bar if it is present.
+        getMenuInflater().inflate(R.menu.main, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        // Handle action bar item clicks here. The action bar will
+        // automatically handle clicks on the Home/Up button, so long
+        // as you specify a parent activity in AndroidManifest.xml.
+        int id = item.getItemId();
+        if (id == R.id.action_settings) {
+            return true;
+        }
+        return super.onOptionsItemSelected(item);
+    }
+
+	@Override
+	public void onLocationChanged(Location location) {
+		// TODO Auto-generated method stub
+		currentLocation = location;
+		
+	}
+
+	@Override
+	public void onConnectionFailed(ConnectionResult arg0) {
+		// TODO Auto-generated method stub
+		Toast.makeText(getApplicationContext(), "Connection to Google Play failed", Toast.LENGTH_LONG).show();
+	}
+
+	@Override
+	public void onConnected(Bundle arg0) {
+		// TODO Auto-generated method stub
+		Toast.makeText(getApplicationContext(), "Connected", Toast.LENGTH_SHORT).show();
+	}
+
+	@Override
+	public void onDisconnected() {
+		// TODO Auto-generated method stub
+		Toast.makeText(getApplicationContext(), "Disconnected from Google Play", Toast.LENGTH_SHORT).show();
+	}
+
+}

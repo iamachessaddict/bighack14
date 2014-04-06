@@ -1,16 +1,40 @@
 package com.bighack14;
 
+import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.GooglePlayServicesClient;
+import com.google.android.gms.common.GooglePlayServicesUtil;
+import com.google.android.gms.location.LocationClient;
+import com.google.android.gms.location.LocationRequest;
+
 import android.app.ActionBar;
+import android.app.Dialog;
 import android.app.Fragment;
 import android.app.ActionBar.Tab;
 import android.app.Activity;
+import android.content.Context;
+import android.location.Location;
+import android.location.LocationManager;
 import android.os.Bundle;
-import android.support.v4.view.ViewPager;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.Toast;
 
-public class MainActivity extends Activity {
+public class MainActivity extends Activity implements
+GooglePlayServicesClient.ConnectionCallbacks,
+GooglePlayServicesClient.OnConnectionFailedListener,
+com.google.android.gms.location.LocationListener {
 
+	Location currentLocation;
+	LocationClient locClient;
+	LocationRequest locRequest;
+	LocationManager locManager;
+	boolean isEnabled;
+	
+	private static final long FASTEST_INTERVAL = 100;
+	private static final long NORMAL_INTERVAL = 10 * FASTEST_INTERVAL;
+	private static final int CONNECTION_FAILURE_RESOLUTION_REQUEST = 1000;
+	
     Tab leftTab, mainTab, rightTab;
     Fragment leftFragment = new LeftFragment();
     Fragment mainFragment = new MainFragment();
@@ -37,9 +61,42 @@ public class MainActivity extends Activity {
 		actionBar.addTab(leftTab);
 		actionBar.addTab(mainTab);
 		actionBar.addTab(rightTab);
+		
+		int resultCode = GooglePlayServicesUtil.isGooglePlayServicesAvailable(this);
+		if (resultCode == ConnectionResult.SUCCESS){
+			locClient = new LocationClient(this, this, this);
+			locRequest = LocationRequest.create();
+			locRequest.setFastestInterval(FASTEST_INTERVAL);
+			locRequest.setPriority(LocationRequest.PRIORITY_BALANCED_POWER_ACCURACY);
+			locRequest.setInterval(NORMAL_INTERVAL);
+			locManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
+			
+			isEnabled = true;
+			locClient.connect();
+			
+			//Logging stuff. Delete later:
+			Log.i("MainActivity", "reached if");
+		} else if (resultCode == ConnectionResult.SERVICE_MISSING || resultCode == ConnectionResult.SERVICE_VERSION_UPDATE_REQUIRED || resultCode == ConnectionResult.SERVICE_DISABLED){
+			Dialog dialog = GooglePlayServicesUtil.getErrorDialog(resultCode, this, CONNECTION_FAILURE_RESOLUTION_REQUEST);
+			dialog.show();
+			
+			isEnabled = false;
+			
+			Toast.makeText(this, "Error getting location services. Please fix and restart.", Toast.LENGTH_SHORT).show();
+			
+			//Logging stuff for debug:
+			Log.i("MainActivity", "reached else if");
+		} else {
+			isEnabled = false;
+			
+			Toast.makeText(this, "Unknown error in location services.", Toast.LENGTH_SHORT).show();
+			
+			//Logging stuff for debug. This line should never be reached:
+			Log.i("MainActivity", "reached else");
+			Log.i("MainActivity", ((Integer)resultCode).toString());
+		}
 
     }
-
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -60,5 +117,28 @@ public class MainActivity extends Activity {
         }
         return super.onOptionsItemSelected(item);
     }
+
+	@Override
+	public void onLocationChanged(Location location) {
+		currentLocation = location;
+		Toast.makeText(getApplicationContext(), "( " + currentLocation.getLatitude() + ", " + currentLocation.getLongitude() + " )", Toast.LENGTH_SHORT).show();
+	}
+
+	@Override
+	public void onConnectionFailed(ConnectionResult arg0) {
+		Log.i("MainActivity", "reached onConnectionFailed");
+		Toast.makeText(getApplicationContext(), "Connection to Google Play failed", Toast.LENGTH_LONG).show();
+	}
+
+	@Override
+	public void onConnected(Bundle arg0) {
+		locClient.requestLocationUpdates(locRequest, this);
+		Toast.makeText(getApplicationContext(), "Connected", Toast.LENGTH_SHORT).show();
+	}
+
+	@Override
+	public void onDisconnected() {
+		Toast.makeText(getApplicationContext(), "Disconnected from Google Play", Toast.LENGTH_SHORT).show();
+	}
 
 }

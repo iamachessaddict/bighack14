@@ -1,0 +1,134 @@
+package com.bighack14;
+
+import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.GooglePlayServicesClient;
+import com.google.android.gms.common.GooglePlayServicesUtil;
+import com.google.android.gms.location.LocationClient;
+import com.google.android.gms.location.LocationRequest;
+
+import android.app.ActionBar;
+import android.app.Fragment;
+import android.app.ActionBar.Tab;
+import android.app.Activity;
+import android.location.Location;
+import android.os.Bundle;
+import android.view.Menu;
+import android.view.MenuItem;
+import android.widget.Toast;
+
+public class MainActivity extends Activity implements
+GooglePlayServicesClient.ConnectionCallbacks,
+GooglePlayServicesClient.OnConnectionFailedListener,
+com.google.android.gms.location.LocationListener {
+
+	Location currentLocation;
+	LocationClient locClient;
+	LocationRequest locRequest;
+	boolean isEnabled;
+	
+	public static final long FASTEST_INTERVAL = 60 * 1000;
+	public static final long NORMAL_INTERVAL = 5 * FASTEST_INTERVAL;
+	
+    Tab leftTab, mainTab, rightTab;
+    Fragment leftFragment = new LeftFragment();
+    Fragment mainFragment = new MainFragment();
+    Fragment rightFragment = new RightFragment();
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_main);
+        ActionBar actionBar = getActionBar();
+        actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_TABS);
+        
+        leftTab = actionBar.newTab();
+        mainTab = actionBar.newTab();
+        rightTab = actionBar.newTab();
+        
+        leftTab.setText(R.string.title_sectionl);
+        mainTab.setText(R.string.title_sectionm);
+        rightTab.setText(R.string.title_sectionr);
+        
+        leftTab.setTabListener(new HackTabListener(leftFragment));
+		mainTab.setTabListener(new HackTabListener(mainFragment));
+		rightTab.setTabListener(new HackTabListener(rightFragment));
+		actionBar.addTab(leftTab);
+		actionBar.addTab(mainTab);
+		actionBar.addTab(rightTab);
+		
+		int resultCode = GooglePlayServicesUtil.isGooglePlayServicesAvailable(this);
+		if (resultCode == ConnectionResult.SUCCESS){
+			locClient = new LocationClient(this, this, this);
+			locRequest = LocationRequest.create();
+			locRequest.setFastestInterval(FASTEST_INTERVAL);
+			locRequest.setPriority(LocationRequest.PRIORITY_BALANCED_POWER_ACCURACY);
+			locRequest.setInterval(NORMAL_INTERVAL);
+			
+			isEnabled = true;
+			
+			//Logging stuff. Delete later:
+			Log.i("MainActivity", "reached if");
+		} else if (resultCode == ConnectionResult.SERVICE_MISSING || resultCode == ConnectionResult.SERVICE_VERSION_UPDATE_REQUIRED || resultCode == ConnectionResult.SERVICE_DISABLED){
+			Dialog dialog = GooglePlayServicesUtil.getErrorDialog(resultCode, mActivity, CONNECTION_FAILURE_RESOLUTION_REQUEST);
+			dialog.show();
+			
+			isEnabled = false;
+			
+			Toast.makeText(mActivity, "Error getting location services. Please fix and restart.", Toast.LENGTH_SHORT).show();
+			
+			//Logging stuff for debug:
+			Log.i("MainActivity", "reached else if");
+		} else {
+			isEnabled = false;
+			
+			Toast.makeText(mActivity, "Unknown error in location services.", Toast.LENGTH_SHORT).show();
+			
+			//Logging stuff for debug. This line should never be reached:
+			Log.i("MainActivity", "reached else");
+			Log.i("MainActivity", ((Integer)resultCode).toString());
+		}
+
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        
+        // Inflate the menu; this adds items to the action bar if it is present.
+        getMenuInflater().inflate(R.menu.main, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        // Handle action bar item clicks here. The action bar will
+        // automatically handle clicks on the Home/Up button, so long
+        // as you specify a parent activity in AndroidManifest.xml.
+        int id = item.getItemId();
+        if (id == R.id.action_settings) {
+            return true;
+        }
+        return super.onOptionsItemSelected(item);
+    }
+
+	@Override
+	public void onLocationChanged(Location location) {
+		currentLocation = location;
+		Toast.makeText(getApplicationContext(), currentLocation.toString(), Toast.LENGTH_SHORT).show();
+	}
+
+	@Override
+	public void onConnectionFailed(ConnectionResult arg0) {
+		Toast.makeText(getApplicationContext(), "Connection to Google Play failed", Toast.LENGTH_LONG).show();
+	}
+
+	@Override
+	public void onConnected(Bundle arg0) {
+		Toast.makeText(getApplicationContext(), "Connected", Toast.LENGTH_SHORT).show();
+	}
+
+	@Override
+	public void onDisconnected() {
+		Toast.makeText(getApplicationContext(), "Disconnected from Google Play", Toast.LENGTH_SHORT).show();
+	}
+
+}
