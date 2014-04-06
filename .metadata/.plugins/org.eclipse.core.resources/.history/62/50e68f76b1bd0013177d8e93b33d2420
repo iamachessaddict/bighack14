@@ -1,0 +1,7 @@
+package com.bighack14;
+
+import java.io.Serializable;
+
+public class PlaceDetails implements Serializable {
+
+}
